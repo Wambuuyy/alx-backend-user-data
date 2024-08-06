@@ -50,9 +50,12 @@ class BasicAuth(Auth):
             return None, None
         if not isinstance(decoded_base64_authorization_header, str):
             return None, None
-        if ':' not in decoded_base64_authorization_header:
+        # Split on the first colon to allow colons in the password
+        split_pos = decoded_base64_authorization_header.find(':')
+        if split_pos == -1:
             return None, None
-        user_email, user_password = decoded_base64_authorization_header.split(':', 1)
+        user_email = decoded_base64_authorization_header[:split_pos]
+        user_password = decoded_base64_authorization_header[split_pos + 1:]
         return user_email, user_password
 
     def user_object_from_credentials(self, user_email: str,
@@ -83,11 +86,13 @@ class BasicAuth(Auth):
         if not authorization_header:
             return None
 
-        base64_authorization = self.extract_base64_authorization_header(authorization_header)
+        base64_authorization = self.extract_base64_authorization_header
+        (authorization_header)
         if not base64_authorization:
             return None
 
-        decoded_base64 = self.decode_base64_authorization_header(base64_authorization)
+        decoded_base64 = self.decode_base64_authorization_header
+        (base64_authorization)
         if not decoded_base64:
             return None
 
