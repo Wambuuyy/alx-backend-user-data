@@ -4,6 +4,7 @@ Auth module
 """
 from flask import request
 from typing import List, TypeVar
+import fnmatch
 
 
 class Auth:
@@ -22,8 +23,10 @@ class Auth:
         # normalize excluded_paths:
         excluded_paths = [p + '/' if p[-1] != '/'
                           else p for p in excluded_paths]
-        if path in excluded_paths:
-            return False
+        # check for wildcard matching
+        for pattern in excluded_paths:
+            if fnmatch.fnmatch(path, pattern):
+                return False
         return True
 
     def authorization_header(self, request=None) -> str:
