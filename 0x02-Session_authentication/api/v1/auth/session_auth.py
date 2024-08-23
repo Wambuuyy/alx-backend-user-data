@@ -2,6 +2,8 @@
 """session auth class"""
 from api.v1.auth.auth import Auth
 import uuid
+import os
+from typing import Dict
 
 
 class SessionAuth(Auth):
@@ -22,3 +24,16 @@ class SessionAuth(Auth):
             return None
         user_id = self.user_id_by_session_id.get(session_id)
         return user_id
+
+    def session_cookie(self, request) -> str:
+        """Returns the session cookie from the request."""
+        return request.cookies.get(os.getenv('SESSION_NAME'))
+
+    def authorization_header(self, request) -> str:
+        """Returns the authorization header from the request."""
+        return request.headers.get('Authorization')
+
+    def current_user(self, request) -> str:
+        """Returns the User ID based on the request."""
+        session_id = self.session_cookie(request)
+        return self.user_id_for_session_id(session_id)
