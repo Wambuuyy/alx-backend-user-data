@@ -4,6 +4,8 @@ from api.v1.auth.auth import Auth
 import uuid
 import os
 from typing import Dict
+from models.user import User
+from flask import request
 
 
 class SessionAuth(Auth):
@@ -35,5 +37,12 @@ class SessionAuth(Auth):
 
     def current_user(self, request) -> str:
         """Returns the User ID based on the request."""
+        if request is None:
+            return None
         session_id = self.session_cookie(request)
-        return self.user_id_for_session_id(session_id)
+        if session_id is None:
+            return None
+        user_id = self.user_id_for_session_id(session_id)
+        if user_id is None:
+            return None
+        return User.get(user_id)
